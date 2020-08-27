@@ -1,0 +1,3 @@
+include ':QuranForInjaziAndroid'
+include ':app'
+rootProject.name = "QuranPagerFor Injazi"
