@@ -10,21 +10,27 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class DownloadActivity extends AppCompatActivity {
 
-    ProgressBar progressBar;
+    public ProgressBar bar;
     TextView info, sizeDisplay;
     Button doneBtn;
     String path, partToDownload = "";
@@ -35,7 +41,8 @@ public class DownloadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
 
-//        progressBar = findViewById(R.id.downloadProgress);
+
+         bar = findViewById(R.id.downloadProgress);
 //        info = findViewById(R.id.info_text);
 //        sizeDisplay = findViewById(R.id.progress_percentage_display);
 //        doneBtn = findViewById(R.id.button);
@@ -44,22 +51,25 @@ public class DownloadActivity extends AppCompatActivity {
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
 
+            //main path + filename + url to download
             path = extra.getString("path", Environment.getExternalStorageDirectory().getAbsolutePath());
             partToDownload = extra.getString("path", "");
 
         }
 
+        Decompress decompress = new Decompress(path + "/1.zip", path,this);
+        decompress.execute();
 
 
         // instantiate it within the onCreate method
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("Downloading....");
+        mProgressDialog.setMessage("جار تحميل ملفات...");
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setCancelable(true);
-        Log.d("trying ", "onCreate: " + path);
-        downloadRequiredFiles("https://injaazy.com/Quran_Images/1.zip");
 
+
+        //downloadRequiredFiles("https://injaazy.com/Quran_Images/1.zip");
 
     }
 
@@ -114,7 +124,7 @@ public class DownloadActivity extends AppCompatActivity {
 
                 // download the file
                 input = connection.getInputStream();
-                output = new FileOutputStream(path);
+                output = new FileOutputStream(path + "/1.zip");
 
                 byte data[] = new byte[4096];
                 long total = 0;
@@ -177,6 +187,98 @@ public class DownloadActivity extends AppCompatActivity {
                 Toast.makeText(context,"Download error: " + result, Toast.LENGTH_LONG).show();
             else
                 Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+
+            Decompress decompress = new Decompress("/1.zip", path + "/1.zip" ,context);
+            decompress.execute();
+                finish();
+        }
+
+    }
+
+    //Unzipping the file
+
+    public class Decompress extends AsyncTask<Void, Integer, Integer> {
+
+        private final static String TAG = "Decompress";
+        private String zipFile;
+        private String location;
+
+        ProgressDialog myProgressDialog;
+        Context ctx;
+
+        public Decompress(String zipFile, String location, Context ctx) {
+            super();
+            this.zipFile = zipFile;
+            this.location = location;
+            this.ctx = ctx;
+            dirChecker("");
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            myProgressDialog = new ProgressDialog(ctx);
+            myProgressDialog.setMessage("Please Wait... Unzipping");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params){
+            int count = 0;
+
+            try  {
+                ZipFile zip = new ZipFile(zipFile);
+                myProgressDialog.setMax(zip.size());
+                FileInputStream fin = new FileInputStream(zipFile);
+                ZipInputStream zin = new ZipInputStream(fin);
+                ZipEntry ze = null;
+                while ((ze = zin.getNextEntry()) != null) {
+
+                    Log.v("Decompress", "Unzipping " + ze.getName());
+                    if( ze.isDirectory()) {
+                        dirChecker(ze.getName());
+                    } else {
+                        FileOutputStream fout = new FileOutputStream(location + ze.getName());
+
+                        byte[] buffer = new byte[8192];
+                        int len;
+                        while ((len = zin.read(buffer)) != -1) {
+                            fout.write(buffer, 0, len);
+                            count++;
+                            publishProgress(count);// Here I am doing the update of my progress bar
+                        }
+                        fout.close();
+                        zin.closeEntry();
+
+                    }
+                }
+                zin.close();
+            } catch(Exception e) {
+                Log.e("Decompress", "unzip", e);
+            }
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            myProgressDialog.setProgress(progress[0]); //Since it's an inner class, Bar should be able to be called directly
+        }
+
+        protected void onPostExecute(Integer... result) {
+            Log.i(TAG, "Completed. Total size: "+ result);
+            if(myProgressDialog != null && myProgressDialog.isShowing()){
+                myProgressDialog.dismiss();
+            }
+        }
+
+        private void dirChecker(String dir)
+        {
+            File f = new File(location + dir);
+            if(!f.isDirectory())
+            {
+                f.mkdirs();
+            }
         }
     }
 }

@@ -40,7 +40,7 @@ public class SourceActivity extends AppCompatActivity {
     ImageView imageView;
     int pageIndex = 0;
     File directory;
-    String[] pageNames;
+    String[] pageNames = new String[604];
     final String folder_main = "Injaazi_quran_images";
     String path = "";
 
@@ -80,7 +80,8 @@ public class SourceActivity extends AppCompatActivity {
     private int currentChapterIndex = 0;
     private String surahName = "";
     int toOpenThisPage = 1;
-Button button;
+
+    Button button;
     @SuppressLint("ClickableViewAccessibility")
 
 
@@ -89,6 +90,11 @@ Button button;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_display);
 
+        for (int i = 0; i < 604 ; i++)
+        {
+            pageNames[i] = "page-" + Integer.toString(i);
+            System.out.println(pageNames[i]);
+        }
         //check Permission
         checkPermissions();
 
@@ -104,7 +110,6 @@ Button button;
             }
         });
 
-
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
 
@@ -115,7 +120,7 @@ Button button;
             toOpenThisPage = ProcessPage.pageNumber(currentVerse, surahName);
         }
 
-        String trial = existInPartUrl(1);
+
 
         if (2 > 8)//check if it exist in the pages directory)
         {
@@ -127,7 +132,7 @@ Button button;
             //load into the imageView
         }
 
-        pageNames = new String[]{"page_2", "page_3", "page__4", "page_5", "page_6"};
+
 
 
 //        for(int i = 0; i < bitmaps.length; i++)
@@ -193,6 +198,11 @@ Button button;
         private String saveToExternalFolder (Bitmap bitmapImage, String pageNumber)
         {
             return null;
+        }
+
+        private boolean existsInEternalStorage(String pageNumber)
+        {
+            return false;
         }
 
         private Bitmap loadImageFromFolder (String path, String pageNumber)
@@ -299,6 +309,11 @@ Button button;
                 quranPages.mkdirs();
                 path = quranPages.getAbsolutePath();
             }
+            else
+            {
+                path = quranPages.getAbsolutePath();
+            }
+            Log.d("path", "createInjaaziDirectory: " + path);
             return path;
         }
 
