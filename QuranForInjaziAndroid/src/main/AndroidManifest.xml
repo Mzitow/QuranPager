@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application>
-        <activity android:name=".ZipperDownload"></activity>
         <activity android:name=".DownloadActivity"></activity>
         <activity android:name=".SourceActivity" />
     </application>

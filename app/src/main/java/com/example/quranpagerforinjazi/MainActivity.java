@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         Intent intent = new Intent(this, SourceActivity.class);
-        intent.putExtra("surahIndex" , 1);
-        intent.putExtra("CurrentVerse", 1);
+        intent.putExtra("surahIndex" , ProcessPage.getIndexofSurah("البقرة"));
+        intent.putExtra("CurrentVerse", 78);
         startActivity(intent);
     }
 

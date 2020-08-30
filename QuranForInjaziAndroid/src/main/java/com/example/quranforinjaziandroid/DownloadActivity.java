@@ -24,6 +24,7 @@ import java.net.URL;
 
 public class DownloadActivity extends AppCompatActivity {
 
+
     String path, urlToDownload , fileNameWithExtension = "";
     ProgressDialog mProgressDialog;
     private int toOpenThisPage = 1;
@@ -53,7 +54,7 @@ public class DownloadActivity extends AppCompatActivity {
         mProgressDialog.setMessage("جار تحميل ملفات...");
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
+        mProgressDialog.setCancelable(false);
 
         try {
             downloadAndUnzip();
@@ -117,7 +118,7 @@ public class DownloadActivity extends AppCompatActivity {
 
                 // download the file
                 input = connection.getInputStream();
-                Log.d("Dangarous", "doInBackground: "  + path + fileNameWithExtension);
+
                 output = new FileOutputStream(path + fileNameWithExtension);
 
                 byte data[] = new byte[4096];
@@ -189,7 +190,7 @@ public class DownloadActivity extends AppCompatActivity {
                 }
 
 
-            Log.d("Dangarous", "onPostExecute: " + path + fileNameWithExtension);
+
             final Handler  handle= new Handler();
             handle.postDelayed(new Runnable() {
                 @Override
