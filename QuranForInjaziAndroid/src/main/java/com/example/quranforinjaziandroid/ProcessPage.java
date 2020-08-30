@@ -18,7 +18,7 @@ public class ProcessPage {
 
     public static int  pageNumber(int currentVerse, int surahIndex)
     {
-        return findPageNumber(getGlobalIndexOfVerse(currentVerse,surahIndex));
+        return findPageNumber(getGlobalIndexOfVerse(currentVerse,surahIndex ));
     }
 
     public static int  pageNumber(int globalVerseIndex)
@@ -33,7 +33,7 @@ public class ProcessPage {
         return Surahs.valueOf(surahName).ordinal() + 1;
     }
 
-    private static int getGlobalIndexOfVerse(int verseIndexInSurah, int surahIndex)
+    private static int getGlobalIndexOfVerse(int verseIndexInSurah, int surahIndex )
     {
         int versesBefore = 0;
         int counter = 0;

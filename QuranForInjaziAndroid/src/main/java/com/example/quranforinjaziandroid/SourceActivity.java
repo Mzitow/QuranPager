@@ -1,6 +1,7 @@
 package com.example.quranforinjaziandroid;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -39,10 +40,14 @@ public class SourceActivity extends AppCompatActivity {
 
     ImageView imageView;
     int pageIndex = 0;
+    int surahIndex;
     File directory;
     String[] pageNames = new String[604];
     final String folder_main = "Injaazi_quran_images";
-    String path = "";
+    String path, urlToDownload , fileNameWithExtension = "";
+    public static final int REQUEST_CODE = 9081;
+    int thePageWas = 0;
+
 
     //permissions
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 10089;
@@ -69,7 +74,7 @@ public class SourceActivity extends AppCompatActivity {
     }
 
     //int[] partBoundaries = {1,107,209,294,360,441,521};
-    private final String[] partChecks = {"page_6", "page_112", "page_212", "page_295", "page_365", "page_446", "page_526"};
+    private final String[] partChecks = {"page-6", "page-112", "page-212", "page-295", "page-365", "page-446", "page-526"};
 
     private final int[] partBoundaries = {1,107,209,294,360,441,521};
     private GestureDetector gdt;
@@ -77,7 +82,6 @@ public class SourceActivity extends AppCompatActivity {
     private static final int THRESHOLD_VELOCITY = 50;
 
     private int currentVerse = 0;
-    private int currentChapterIndex = 0;
     private String surahName = "";
     int toOpenThisPage = 1;
 
@@ -93,63 +97,65 @@ public class SourceActivity extends AppCompatActivity {
         for (int i = 0; i < 604 ; i++)
         {
             pageNames[i] = "page-" + Integer.toString(i);
-            System.out.println(pageNames[i]);
         }
+
         //check Permission
         checkPermissions();
 
         button = findViewById(R.id.button2);
+            button.setVisibility(View.GONE);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SourceActivity.this, DownloadActivity.class);
-                intent.putExtra("path", path);
-                startActivity(intent);
-
-            }
-        });
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(SourceActivity.this, DownloadActivity.class);
+//                intent.putExtra("path", path);
+//                startActivity(intent);
+//
+//            }
+//        });
 
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
-
             surahName = extra.getString("surahName", "الناس");
             currentVerse = extra.getInt("CurrentVerse");
-            currentChapterIndex = extra.getInt("currentChapterIndex", 114);
+            surahIndex = extra.getInt("surahIndex");
             //open this page
-            toOpenThisPage = ProcessPage.pageNumber(currentVerse, surahName);
+            toOpenThisPage = ProcessPage.pageNumber(currentVerse, surahIndex - 1);
         }
 
+        Log.d("TAG", "onCreate: " + existInPart(toOpenThisPage));
 
-
-        if (2 > 8)//check if it exist in the pages directory)
+        if (partExistsInDirectory( Integer.toString(existInPart(toOpenThisPage))  ))//check if it exist in the pages directory)
         {
-            //loadIntoImageView
+            loadFileFromExternalFolder(toOpenThisPage, existInPart(toOpenThisPage));
+
         } else {
             //find the part it falls under
+            fileNameWithExtension =  ("/" + Integer.toString(existInPart(toOpenThisPage)  )+ ".zip");
+            urlToDownload = existInPartUrl(toOpenThisPage);
+
+
+            Log.d("TAG", "onCreate: " + fileNameWithExtension + "  " + urlToDownload + "   " + path);
+            Intent intent = new Intent(this,DownloadActivity.class );
+            intent.putExtra("fileNameWithExtension",fileNameWithExtension);
+            intent.putExtra("path",path);
+            intent.putExtra("toOpenThisPage", toOpenThisPage);
+            intent.putExtra("urlToDownload", urlToDownload );
+            startActivityForResult(intent,REQUEST_CODE);
             //download the zip file **use dialog
             //unpack it into the images folder ** use dialog
             //load into the imageView
+            loadFileFromExternalFolder(toOpenThisPage,existInPart(toOpenThisPage));
         }
 
 
-
-
-//        for(int i = 0; i < bitmaps.length; i++)
-//        {
-//            Bitmap bm = BitmapFactory.decodeResource(getResources(), this.getResources().getIdentifier(pageNames[i], "raw", this.getPackageName()));
-//            bitmaps[i] = bm;
-//            saveToInternalStorage(bm,pageNames[i]);
-//        }
-
-//        Bitmap bm = BitmapFactory.decodeResource(getResources(), this.getResources().getIdentifier("page_2", "raw", this.getPackageName()));
-//        saveToInternalStorage(bm ,"page_2");
+//        path = extra.getString("path", Environment.getExternalStorageDirectory().getAbsolutePath());
+//        fileNameWithExtension = extra.getString("fileNameWithEtension","/1.zip");
+//        urlToDownload = extra.getString("urlToDownload", SourceActivity.Downloadfiles.PART1.getPartUrl());
 
         imageView = findViewById(R.id.quran_page_display);
-        //imageView.setImageBitmap(loadImageFromStorage(directory.getPath(), pageNames[pageIndex]));
 
-
-        //on swipe listener
         gdt = new GestureDetector(new GestureListener());
         imageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -159,6 +165,37 @@ public class SourceActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        {
+            ImageView imageView = findViewById(R.id.quran_page_display);
+            imageView.invalidate();
+            loadFileFromExternalFolder(thePageWas, existInPart(thePageWas));
+        }
+    }
+
+    private void loadFileFromExternalFolder(int toOpenThisPage, int existInPart)
+    {
+
+        Log.d("TAG", "loadFileFromExternalFolder: " + path + File.separator + Integer.toString(existInPart)  + File.separator + pageNames[toOpenThisPage] + ".png");
+
+        String pathToImage = path + File.separator + Integer.toString(existInPart)  + File.separator + pageNames[toOpenThisPage] + ".png";
+
+
+        File imgFile = new  File(pathToImage);
+
+        if(imgFile.exists()){
+
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+            ImageView imageView = (ImageView) findViewById(R.id.quran_page_display);
+
+            imageView.setImageBitmap(myBitmap);
+
+        }
 
     }
 
@@ -168,47 +205,49 @@ public class SourceActivity extends AppCompatActivity {
 
         if (toOpenThisPage >= 521) return Downloadfiles.PART7.getPartUrl();
 
-        for (int i = 0, j = 1; i < 7 && j < 6; i++, j++) {
+        for (int i = 0, j = 1; i < 7 && j < 6; i++, j++,index++) {
             if ((toOpenThisPage >= partBoundaries[i]) && (toOpenThisPage < partBoundaries[j])) {
-                index = i;
                 break;
             }
         }
         return Downloadfiles.values()[index].getPartUrl();
     }
 
-        private int existInPart (int pageIndex)
-        {
+    private boolean partExistsInDirectory(String partName)
+    {
+        Log.d("TAG", "partExistsInDirectory: " + partName);
 
-            int index = 0;
+        String fullPath = path + "/" + partName;
+        File file = new File(fullPath);
+        Log.d("TAG", "partExistsInDirectory: " + fullPath);
+        return file.exists();
+    }
 
-            if (toOpenThisPage >= 521) return Downloadfiles.PART7.ordinal();
+    private int existInPart (int pageIndex)
+    {
 
-            for (int i = 0, j = 1; i < 7 && j < 6; i++, j++) {
-                if ((toOpenThisPage >= partBoundaries[i]) && (toOpenThisPage < partBoundaries[j])) {
-                    index = i;
-                    break;
-                }
+        int index = 0;
+
+
+        if (toOpenThisPage >= 521) return  (Downloadfiles.PART7.ordinal() + 1);
+
+        for (int i = 0, j = 1; i < 7 && j < 6; i++, j++, index++) {
+            if ((pageIndex >= partBoundaries[i]) && (pageIndex < partBoundaries[j])) {
+                break;
             }
-
-            return Downloadfiles.values()[index].ordinal();
-
         }
 
-        private String saveToExternalFolder (Bitmap bitmapImage, String pageNumber)
-        {
-            return null;
+        Log.d("TAG2", "existInPart: " + (Downloadfiles.values()[index].ordinal()  + 1 ));
+        return  (Downloadfiles.values()[index].ordinal() + 1);
         }
 
-        private boolean existsInEternalStorage(String pageNumber)
+
+        //Write this function last
+        private boolean pageExistsInEternalFolder(int pageNumber)
         {
             return false;
         }
 
-        private Bitmap loadImageFromFolder (String path, String pageNumber)
-        {
-            return null;
-        }
 
         private class GestureListener extends GestureDetector.SimpleOnGestureListener
         {
@@ -216,36 +255,23 @@ public class SourceActivity extends AppCompatActivity {
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
                 if (e1.getX() - e2.getX() > MIN_SWIPPING_DISTANCE && Math.abs(velocityX) > THRESHOLD_VELOCITY) {
-                    Toast.makeText(getApplicationContext(), "You have swipped left side", Toast.LENGTH_SHORT).show();
-                    /* Code that you want to do on swiping left side Load previos page*/
-                    if (pageIndex > 0) pageIndex--;
-                    if (pageIndex == 4) pageIndex = 3;
-                    //imageView.setImageBitmap(loadImageFromStorage(directory.getPath(), pageNames[pageIndex]));
 
+                        toOpenThisPage--;
 
-//                String uri = "@drawable/"+ pageNames[pageIndex];  // where myresource (without the extension) is the file
-//                int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-//                Drawable res = getResources().getDrawable(imageResource);
-//                imageView.setImageDrawable(res);
-
-
-                    Log.d("OnSwipePage", "onFling: Left " + pageIndex + " " + directory.getPath());
-
+                        if (toOpenThisPage < 1) toOpenThisPage = 1;
+                        /* Code that you want to do on swiping left side Load previos page*/
+                        loadFileFromExternalFolder(toOpenThisPage, existInPart(toOpenThisPage));
 
                     return false;
                 } else if (e2.getX() - e1.getX() > MIN_SWIPPING_DISTANCE && Math.abs(velocityX) > THRESHOLD_VELOCITY) {
-                    Toast.makeText(getApplicationContext(), "You have swipped right side", Toast.LENGTH_SHORT).show();
-
-                    if (pageIndex < 5) pageIndex++;
-                    //imageView.setImageBitmap(loadImageFromStorage(directory.getPath(),pageNames[pageIndex]));
-
-//                String uri = "@drawable/"+ pageNames[pageIndex];  // where myresource (without the extension) is the file
-//                int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-//                Drawable res = getResources().getDrawable(imageResource);
-//                imageView.setImageDrawable(res);
 
 
-                    Log.d("OnSwipePage", "onFling: Right " + pageIndex);
+                    toOpenThisPage++;
+
+                    if (toOpenThisPage > 604) toOpenThisPage = 604;
+
+                    loadFileFromExternalFolder(toOpenThisPage,existInPart(toOpenThisPage));
+
                     /* Code that you want to do on swiping right side*/
                     return false;
                 }
@@ -257,6 +283,7 @@ public class SourceActivity extends AppCompatActivity {
         /**
          * Checks the dynamically-controlled permissions and requests missing permissions from end user.
          */
+
         protected void checkPermissions ()
         {
             final List<String> missingPermissions = new ArrayList<String>();
@@ -301,7 +328,20 @@ public class SourceActivity extends AppCompatActivity {
             }
         }
 
-        private String createInjaaziDirectory()
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if (requestCode == REQUEST_CODE  && resultCode  == RESULT_OK) {
+
+            if(data != null)
+                 thePageWas = data.getIntExtra("toOpenThisPage", toOpenThisPage);
+
+        }
+    }
+
+    private String createInjaaziDirectory()
         {
 
             File quranPages = new File(Environment.getExternalStorageDirectory(), folder_main);
