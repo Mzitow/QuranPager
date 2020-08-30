@@ -39,7 +39,6 @@ public class DownloadActivity extends AppCompatActivity {
 
             //main path(path) + filename("/1.zip") + url to download
 
-            toOpenThisPage = extra.getInt("toOpenThisPage");
             path = extra.getString("path", Environment.getExternalStorageDirectory().getAbsolutePath());
             fileNameWithExtension = extra.getString("fileNameWithExtension","");
             urlToDownload = extra.getString("urlToDownload", SourceActivity.Downloadfiles.PART1.getPartUrl());
@@ -196,13 +195,12 @@ public class DownloadActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     deleteZipFile(path);
+                    finish();
                 }
             },1000);
 
-            Intent intent = getIntent();
-            intent.putExtra("toOpenThisPage", toOpenThisPage);
-            setResult(RESULT_OK, intent);
-            finish();
+
+
         }
 
 

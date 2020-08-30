@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,9 +46,9 @@ public class SourceActivity extends AppCompatActivity {
     String[] pageNames = new String[604];
     final String folder_main = "Injaazi_quran_images";
     String path, urlToDownload , fileNameWithExtension = "";
-    public static final int REQUEST_CODE = 9081;
     int thePageWas = 0;
-
+    public static final String MY_PREFS_NAME = "LAST_VERSE";
+    SharedPreferences.Editor editor;
 
     //permissions
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 10089;
@@ -94,6 +95,8 @@ public class SourceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_display);
 
+        editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+
         for (int i = 0; i < 604 ; i++)
         {
             pageNames[i] = "page-" + Integer.toString(i);
@@ -102,18 +105,13 @@ public class SourceActivity extends AppCompatActivity {
         //check Permission
         checkPermissions();
 
-        button = findViewById(R.id.button2);
-            button.setVisibility(View.GONE);
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        thePageWas = prefs.getInt("lastVerse", 0);
+//        if (thePageWas != 0)
+//            loadFileFromExternalFolder(thePageWas, existInPart(thePageWas));
 
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(SourceActivity.this, DownloadActivity.class);
-//                intent.putExtra("path", path);
-//                startActivity(intent);
-//
-//            }
-//        });
+
+
 
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
@@ -122,37 +120,14 @@ public class SourceActivity extends AppCompatActivity {
             surahIndex = extra.getInt("surahIndex");
             //open this page
             toOpenThisPage = ProcessPage.pageNumber(currentVerse, surahIndex - 1);
+            editor.putInt("lastVerse", toOpenThisPage);
+            editor.apply();
+
         }
 
         Log.d("TAG", "onCreate: " + existInPart(toOpenThisPage));
 
-        if (partExistsInDirectory( Integer.toString(existInPart(toOpenThisPage))  ))//check if it exist in the pages directory)
-        {
-            loadFileFromExternalFolder(toOpenThisPage, existInPart(toOpenThisPage));
 
-        } else {
-            //find the part it falls under
-            fileNameWithExtension =  ("/" + Integer.toString(existInPart(toOpenThisPage)  )+ ".zip");
-            urlToDownload = existInPartUrl(toOpenThisPage);
-
-
-            Log.d("TAG", "onCreate: " + fileNameWithExtension + "  " + urlToDownload + "   " + path);
-            Intent intent = new Intent(this,DownloadActivity.class );
-            intent.putExtra("fileNameWithExtension",fileNameWithExtension);
-            intent.putExtra("path",path);
-            intent.putExtra("toOpenThisPage", toOpenThisPage);
-            intent.putExtra("urlToDownload", urlToDownload );
-            startActivityForResult(intent,REQUEST_CODE);
-            //download the zip file **use dialog
-            //unpack it into the images folder ** use dialog
-            //load into the imageView
-            loadFileFromExternalFolder(toOpenThisPage,existInPart(toOpenThisPage));
-        }
-
-
-//        path = extra.getString("path", Environment.getExternalStorageDirectory().getAbsolutePath());
-//        fileNameWithExtension = extra.getString("fileNameWithEtension","/1.zip");
-//        urlToDownload = extra.getString("urlToDownload", SourceActivity.Downloadfiles.PART1.getPartUrl());
 
         imageView = findViewById(R.id.quran_page_display);
 
@@ -170,7 +145,37 @@ public class SourceActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         {
+            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            thePageWas = prefs.getInt("lastVerse", 1);
+
+
+            if (partExistsInDirectory( Integer.toString(existInPart(thePageWas))  ))//check if it exist in the pages directory)
+            {
+                loadFileFromExternalFolder(thePageWas, existInPart(thePageWas));
+
+            } else {
+                //find the part it falls under
+                //download the zip file **use dialog
+                //unpack it into the images folder ** use dialog
+                //load into the imageView
+                fileNameWithExtension =  ("/" + Integer.toString(existInPart(toOpenThisPage)  )+ ".zip");
+                urlToDownload = existInPartUrl(toOpenThisPage);
+
+                Intent intent = new Intent(this,DownloadActivity.class );
+                intent.putExtra("fileNameWithExtension",fileNameWithExtension);
+                intent.putExtra("path",path);
+                intent.putExtra("urlToDownload", urlToDownload );
+
+                editor.putInt("lastVerse", toOpenThisPage);
+                editor.apply();
+
+                startActivity(intent);
+                loadFileFromExternalFolder(toOpenThisPage,existInPart(toOpenThisPage));
+            }
+
+
             ImageView imageView = findViewById(R.id.quran_page_display);
             imageView.invalidate();
             loadFileFromExternalFolder(thePageWas, existInPart(thePageWas));
@@ -228,7 +233,6 @@ public class SourceActivity extends AppCompatActivity {
 
         int index = 0;
 
-
         if (toOpenThisPage >= 521) return  (Downloadfiles.PART7.ordinal() + 1);
 
         for (int i = 0, j = 1; i < 7 && j < 6; i++, j++, index++) {
@@ -237,7 +241,6 @@ public class SourceActivity extends AppCompatActivity {
             }
         }
 
-        Log.d("TAG2", "existInPart: " + (Downloadfiles.values()[index].ordinal()  + 1 ));
         return  (Downloadfiles.values()[index].ordinal() + 1);
         }
 
@@ -261,6 +264,8 @@ public class SourceActivity extends AppCompatActivity {
                         if (toOpenThisPage < 1) toOpenThisPage = 1;
                         /* Code that you want to do on swiping left side Load previos page*/
                         loadFileFromExternalFolder(toOpenThisPage, existInPart(toOpenThisPage));
+                        editor.putInt("lastVerse", toOpenThisPage);
+                        editor.apply();
 
                     return false;
                 } else if (e2.getX() - e1.getX() > MIN_SWIPPING_DISTANCE && Math.abs(velocityX) > THRESHOLD_VELOCITY) {
@@ -271,6 +276,8 @@ public class SourceActivity extends AppCompatActivity {
                     if (toOpenThisPage > 604) toOpenThisPage = 604;
 
                     loadFileFromExternalFolder(toOpenThisPage,existInPart(toOpenThisPage));
+                    editor.putInt("lastVerse", toOpenThisPage);
+                    editor.apply();
 
                     /* Code that you want to do on swiping right side*/
                     return false;
@@ -328,18 +335,6 @@ public class SourceActivity extends AppCompatActivity {
             }
         }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        if (requestCode == REQUEST_CODE  && resultCode  == RESULT_OK) {
-
-            if(data != null)
-                 thePageWas = data.getIntExtra("toOpenThisPage", toOpenThisPage);
-
-        }
-    }
 
     private String createInjaaziDirectory()
         {

@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import com.example.quranforinjaziandroid.ProcessPage;
 import com.example.quranforinjaziandroid.SourceActivity;
 
 import java.io.IOException;
@@ -24,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         Intent intent = new Intent(this, SourceActivity.class);
-        intent.putExtra("surahIndex" , 5);
-        intent.putExtra("CurrentVerse", 38);
+        intent.putExtra("surahIndex" , 1);
+        intent.putExtra("CurrentVerse", 1);
         startActivity(intent);
     }
 

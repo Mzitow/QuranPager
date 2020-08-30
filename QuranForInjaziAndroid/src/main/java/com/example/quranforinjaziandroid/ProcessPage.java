@@ -27,7 +27,7 @@ public class ProcessPage {
     }
 
 
-    private static int getIndexofSurah(String surahName)
+    public static int getIndexofSurah(String surahName)
     {
         if  (surahName.equals("آل عمران")) return 3;
         return Surahs.valueOf(surahName).ordinal() + 1;
