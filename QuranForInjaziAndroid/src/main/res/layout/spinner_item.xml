@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="rtl"
+    android:weightSum="100"
+    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="0dp"
+        android:textDirection="rtl"
+        android:id="@+id/verse_surah"
+        android:layout_weight="80"
+        android:fontFamily="@font/segoeui"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        tools:text=" 6. الأنعام  " />
+
+    <ImageView
+        android:layout_marginTop="2dp"
+        android:layout_weight="20"
+        android:layout_width="0dp"
+        android:src="@drawable/ic_drop_down_spinner_icon"
+        android:layout_height="wrap_content">
+
+    </ImageView>
+
+</LinearLayout>

@@ -4,22 +4,124 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@android:color/white"
     android:layout_height="match_parent"
     tools:context=".SourceActivity">
 
 
-    <ImageView
-        android:id="@+id/quran_page_display"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/page__4"
-        android:padding="3dp"
-        android:layout_margin="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:weightSum="100"
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="0dp"
+            android:background="@drawable/green_box"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="12dp"
+                    android:weightSum="5"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/ic_top_rect"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:background="@drawable/style_spinner1"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="0dp"
+                        android:orientation="vertical"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:weightSum="100"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <Spinner
+                            android:id="@+id/verseSpinner"
+                            android:padding="5dp"
+                            android:spinnerMode="dropdown"
+                            tools:listitem="@layout/spinner_item"
+                            android:popupBackground="@drawable/white_spinner_oultline"
+                            android:background="@drawable/white_spinner_oultline"
+                            android:layoutDirection="rtl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:background="@drawable/style_spinner1"
+                        android:orientation="horizontal"
+                        android:layout_weight="3"
+                        android:gravity="center_vertical"
+                        android:weightSum="100"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+                        <Spinner
+                            android:id="@+id/surahSpinner"
+                            android:padding="5dp"
+                            android:spinnerMode="dropdown"
+                            tools:listitem="@layout/spinner_item"
+                            android:popupBackground="@drawable/white_spinner_oultline"
+                            android:background="@drawable/white_spinner_oultline"
+                            android:layoutDirection="rtl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_weight="100"
+                android:id="@+id/quran_page_display"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:src="@drawable/page_3"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="0dp"
+                android:scaleType="fitXY" />
+
+
+            <include
+                android:visibility="gone"
+                layout="@layout/bottom_sheet_content">
+            </include>
+
+            <ImageView
+
+                android:layout_gravity="center"
+                android:id="@+id/show_peformance_cards"
+                android:layout_marginTop="-4dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:elevation="4dp"
+                android:src="@drawable/ic_drag_up_arrow"
+                android:visibility="visible">
+            </ImageView>
+        </LinearLayout>
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

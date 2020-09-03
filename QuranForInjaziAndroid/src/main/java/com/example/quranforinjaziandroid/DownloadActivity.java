@@ -25,7 +25,8 @@ import java.net.URL;
 public class DownloadActivity extends AppCompatActivity {
 
 
-    String path, urlToDownload , fileNameWithExtension = "";
+
+    static String path, urlToDownload , fileNameWithExtension = "";
     ProgressDialog mProgressDialog;
     private int toOpenThisPage = 1;
 
@@ -187,27 +188,15 @@ public class DownloadActivity extends AppCompatActivity {
                     unzippingClass.unzip(DownloadActivity.this, path + fileNameWithExtension, path);
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-
-
-
-            final Handler  handle= new Handler();
-            handle.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    deleteZipFile(path);
+                }finally {
+                    deleteZipFile(path + fileNameWithExtension);
                     finish();
                 }
-            },1000);
 
-
-
+                }
         }
 
-
-
-    }
-    private void deleteZipFile(String s) {
+    public static void deleteZipFile(String s) {
         File fdelete = new File(s + fileNameWithExtension);
         if (fdelete.exists()) {
             if (fdelete.delete()) {

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -74,7 +75,12 @@ import java.util.zip.ZipInputStream;
 
             @Override
             protected void onPostExecute(Boolean result) {
+
                 mProgressDialog.dismiss();
+                Log.d("deleting", "onPostExecute: " + StorezipFileLocation);
+
+
+
             }
 
 
@@ -129,6 +135,7 @@ import java.util.zip.ZipInputStream;
 
         public void unzip()
         {
+            Character name = '0';
             try
             {
                 FileInputStream fin = new FileInputStream(zipFile);
@@ -137,7 +144,7 @@ import java.util.zip.ZipInputStream;
                 while ((ze = zin.getNextEntry()) != null)
                 {
                     Log.v("Decompress", "Unzipping " + ze.getName());
-
+                        name = ze.getName().charAt(0);
                     if(ze.isDirectory())
                     {
                         dirChecker(ze.getName());
@@ -160,6 +167,8 @@ import java.util.zip.ZipInputStream;
 
                 }
                 zin.close();
+
+
             }
             catch(Exception e)
             {
