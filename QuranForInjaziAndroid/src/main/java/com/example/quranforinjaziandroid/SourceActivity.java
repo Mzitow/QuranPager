@@ -202,7 +202,7 @@ public class SourceActivity extends AppCompatActivity {
         //my Animations
         final Animation bottomUp = AnimationUtils.loadAnimation(this, R.anim.bottom_up);
         final Animation bottomDown = AnimationUtils.loadAnimation(this, R.anim.bottom_down);
-        final LinearLayout mistakeCards = findViewById(R.id.bottom_sheet);
+        final LinearLayout mistakeCards =  (LinearLayout)  findViewById(R.id.bottom_sheet_for_injaazi_quran);
 
         manageMyMistakeCards();
 

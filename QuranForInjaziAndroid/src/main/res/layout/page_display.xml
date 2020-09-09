@@ -106,7 +106,7 @@
 
             <include
                 android:visibility="gone"
-                layout="@layout/bottom_sheet_content">
+                layout="@layout/bottom_card_injaazi_quraan">
             </include>
 
             <ImageView

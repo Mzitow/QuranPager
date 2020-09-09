@@ -6,29 +6,26 @@
     android:id="@+id/card"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:theme="@style/AppTheme"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    >
+    android:theme="@style/AppTheme">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ImageView
+            android:layout_gravity="center"
             android:id="@+id/btn_add"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_increase" />
 
         <TextView
+            android:layout_gravity="center"
             android:layout_marginBottom="4dp"
             android:id="@+id/name"
             android:layout_width="wrap_content"
@@ -38,13 +35,10 @@
             android:fontFamily="@font/segoeuib"
             android:text="تجويد"
             android:textColor="@color/text_color_2"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/btn_add"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-/>
+            android:textSize="12sp" />
 
         <TextView
+            android:layout_gravity="center"
             android:id="@+id/number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,14 +46,10 @@
             android:text="00"
             android:textColor="@color/green"
             android:textSize="25sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/name"
-            app:layout_constraintHorizontal_bias="0.50"
-            app:layout_constraintStart_toStartOf="@+id/name"
-            app:layout_constraintTop_toBottomOf="@+id/name"
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -67,23 +57,16 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/number"
             app:srcCompat="@drawable/ic_slash" />
 
         <ImageView
+            android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:layout_constraintTop_toBottomOf="@id/number"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:srcCompat="@drawable/ic_decrease" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
