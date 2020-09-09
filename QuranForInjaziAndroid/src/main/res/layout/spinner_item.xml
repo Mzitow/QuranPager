@@ -24,7 +24,7 @@
 
     <ImageView
         android:background="@color/green"
-        android:id="@+id/dropDown"
+        android:id="@+id/drop_down_icon"
         android:layout_marginTop="2dp"
         android:layout_weight="20"
         android:layout_width="0dp"

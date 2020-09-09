@@ -66,7 +66,7 @@ public class SpinAdapter extends ArrayAdapter<SpinAdapter.SpinItems> {
         //TextView label = (TextView) super.getDropDownView(position, convertView, parent);
         View row = LayoutInflater.from(parent.getContext()).inflate(R.layout.spinner_item, parent, false);
         final TextView label=(TextView)row.findViewById(R.id.verse_surah);
-        final ImageView dropDownIcon = (ImageView) row.findViewById(R.id.dropDown);
+        final ImageView dropDownIcon = (ImageView) row.findViewById(R.id.drop_down_icon);
 
         dropDownIcon.setVisibility(View.INVISIBLE);
         label.setTextColor(Color.WHITE);
