@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Intent intent = new Intent(this, SourceActivity.class);
-        intent.putExtra("surahIndex" , 5);
+        intent.putExtra("surahIndex" , 3);
         intent.putExtra("tajweed",5);
         intent.putExtra("CurrentVerse", 100);
         startActivityForResult(intent,REQUEST_FOR_CARD_INPUTS);
