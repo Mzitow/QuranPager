@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
@@ -201,7 +202,7 @@ public class SourceActivity extends AppCompatActivity {
         //my Animations
         final Animation bottomUp = AnimationUtils.loadAnimation(this, R.anim.bottom_up);
         final Animation bottomDown = AnimationUtils.loadAnimation(this, R.anim.bottom_down);
-        final ConstraintLayout mistakeCards = findViewById(R.id.bottom_sheet);
+        final LinearLayout mistakeCards = findViewById(R.id.bottom_sheet);
 
         manageMyMistakeCards();
 
@@ -503,8 +504,8 @@ public class SourceActivity extends AppCompatActivity {
                         /* Code that you want to do on swiping left side Load previos page*/
                         loadFileFromExternalFolder(toOpenThisPage, existInPart(toOpenThisPage));
 
-                        SpinAdapter.SpinItems item = new SpinAdapter.SpinItems(0,Integer.toString(ProcessPage.getVerseIndexInSurah(ProcessPage.pageHeaderIndex[toOpenThisPage + 1])));
-                        surahSpinner.setSelection(verseAdapter.getPosition(item));
+//                        SpinAdapter.SpinItems item = new SpinAdapter.SpinItems(0,Integer.toString(ProcessPage.getVerseIndexInSurah(ProcessPage.pageHeaderIndex[toOpenThisPage + 1])));
+//                        surahSpinner.setSelection(verseAdapter.getPosition(item));
 
                         Log.d("TAG20", "onFling: " + ProcessPage.getVerseIndexInSurah(ProcessPage.pageHeaderIndex[toOpenThisPage - 1]));
 
